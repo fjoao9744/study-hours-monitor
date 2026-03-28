@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register hours</title>
+</head>
+<body>
+    <div style="display: none; border: 2px solid black;" id="modal_">
+        <form method="POST" action="/dashboard/add_topic/" id="topic_form">
+        {% csrf_token %}
+            <input type="text" name="topic" placeholder="new_topic">
+            <button type="submit">send</button>
+        </form>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ topics }}
+        <div>
+            <span>Topic:</span>
+            <select>
+                {% for topic in topics%}
+                <option value="{{ topic }}">{{ topic }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" onclick="modal_show()">add</button>
+        </div>
+        <div>
+            <span>Hours:</span>
+            <input type="text" name="hours" placeholder="hours">
+        </div>
+        <button type="submit">register</button>
+    </form>
+
+    <script>
+        function modal_show() {
+            document.getElementById("modal_").style.display = "block";
+        }
+        document.getElementById("topic_form").addEventListener("submit", (event) => {
+        })
+    </script>
+</body>
+</html>

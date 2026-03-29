@@ -1,19 +1,177 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Dashboard - Horas Contadas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>dashboard</h1>
-    <p>Graphs</p>
 
-    <a href="register/">create register</a>
+<body class="bg-gray-900 text-white">
 
-    {% if user.is_authenticated %}
-    <p>User: {{ user.username }}</p>
-    <a href="/auth/logout/">Logout</a>
-    {% endif %}
+  <!-- Navbar -->
+  <header class="bg-gray-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-400"><a href="{% url 'homepage' %}">⏱ Horas Contadas</a></h1>
+      <nav class="space-x-6">
+        <a href="#" class="hover:text-red-400">Sair</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Container -->
+  <main class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- Título -->
+    <div class="mb-10">
+      <h2 class="text-3xl font-bold">Seu Dashboard</h2>
+      <p class="text-gray-400">Acompanhe seu progresso de estudos</p>
+    </div>
+
+    <!-- Cards principais -->
+    <div class="grid md:grid-cols-3 gap-6 mb-10">
+
+      <div class="bg-gray-800 p-6 rounded-xl shadow">
+        <p class="text-gray-400">Hoje</p>
+        <h3 class="text-3xl font-bold text-blue-400 mt-2">5h</h3>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl shadow">
+        <p class="text-gray-400">Semana</p>
+        <h3 class="text-3xl font-bold text-green-400 mt-2">32h</h3>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl shadow">
+        <p class="text-gray-400">Total</p>
+        <h3 class="text-3xl font-bold text-purple-400 mt-2">120h</h3>
+      </div>
+
+    </div>
+
+    <!-- Progresso -->
+    <div class="bg-gray-800 p-6 rounded-xl mb-10">
+      <div class="flex justify-between mb-2">
+        <span class="text-gray-400">Meta semanal</span>
+        <span class="text-gray-400">32h / 40h</span>
+      </div>
+
+      <div class="w-full bg-gray-700 rounded-full h-4">
+        <div class="bg-blue-500 h-4 rounded-full" style="width: 80%"></div>
+      </div>
+    </div>
+
+  <p>Graphs</p> <!-- !!! -->
+
+    <!-- Grid secundário -->
+    <div class="grid md:grid-cols-2 gap-6">
+
+      <!-- Últimos registros -->
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-4">📅 Últimos registros</h3>
+
+        <div class="space-y-4">
+
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span>Matemática</span>
+            <span class="text-blue-400">2h</span>
+          </div>
+
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span>Programação</span>
+            <span class="text-green-400">3h</span>
+          </div>
+
+          <div class="flex justify-between border-b border-gray-700 pb-2">
+            <span>Física</span>
+            <span class="text-purple-400">1h</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Distribuição -->
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-4">📊 Distribuição</h3>
+
+        <div class="space-y-4">
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Programação</span>
+              <span>50%</span>
+            </div>
+            <div class="w-full bg-gray-700 h-3 rounded">
+              <div class="bg-blue-500 h-3 rounded" style="width: 50%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Matemática</span>
+              <span>30%</span>
+            </div>
+            <div class="w-full bg-gray-700 h-3 rounded">
+              <div class="bg-green-500 h-3 rounded" style="width: 30%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Física</span>
+              <span>20%</span>
+            </div>
+            <div class="w-full bg-gray-700 h-3 rounded">
+              <div class="bg-purple-500 h-3 rounded" style="width: 20%"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Registros -->
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-4">📊 Registros</h3>
+        <a href="{% url 'register_hours'%}">adicionar um novo registro</a>
+        <div class="space-y-4">
+          {% for register in registers %}
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>{{ register.topic }}</span>
+              <span>{{ register.hours }}</span>
+            </div>
+            <div class="w-full bg-gray-700 h-3 rounded">
+              <div class="bg-blue-500 h-3 rounded" style="width: 50%"></div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Topicos -->
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-4">📊 Topicos</h3>
+
+        <div class="space-y-4">
+          {% for topic in topics %}
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>{{ topic.name }}</span>
+              <span>{{ topic.hours }}</span>
+            </div>
+            <div class="w-full bg-gray-700 h-3 rounded">
+              <div class="h-3 rounded" style="width: 50%; background-color: {{ topic.color }};"></div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
 </body>
 </html>

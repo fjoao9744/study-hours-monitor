@@ -11,6 +11,8 @@ class Student(models.Model):
 class Topic(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='topics')
     name = models.CharField(max_length=100, unique=True, null=False)
+    hours = models.FloatField(default=0, null=False)
+    color = models.CharField(default="#4E4E4E", max_length=10)
 
     def __str__(self):
         return self.name

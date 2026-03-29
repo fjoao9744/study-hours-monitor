@@ -1,17 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Hours Monitor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>homepage</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Laudantium dignissimos, temporibus amet eos libero magnam soluta, est cum optio molestias aperiam nesciunt ducimus? Repellat aut itaque totam. Consectetur, nesciunt optio.</p>
+
+<body class="bg-gray-900 text-white">
+
+  <!-- Navbar -->
+  <header class="bg-gray-800 shadow-md">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-400"><a href="{% url 'homepage' %}">⏱ Monitor de Horas</a></h1>
+      <nav class="space-x-6 flex">
+        <a href="{% url 'dashboard' %}" class="hover:text-blue-400">Dashboard</a>
+        {% if user.is_authenticated %}
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-300 border border-blue-200 text-blue-600 text-sm font-semibold">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+                Você ja esta conectado!
+                <a href="{% url 'logout' %}" class="text-blue-400">sair?</a>
+            </div>
+        {% else %}
+        <div class="flex border border-blue-200 rounded-full w-full max-w-full px-4 divide-x divide-gray-300">
+            <a href="{% url 'login' %}" class="hover:text-blue-400 px-4">Entrar</a>
+            <a href="{% url 'register' %}" class="hover:text-blue-500  px-4">Cadastro</a>
+        </div>
+
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="text-center py-20 px-6">
+    <h2 class="text-4xl md:text-5xl font-bold mb-6">
+      Controle suas horas de estudo
+    </h2>
+    <p class="text-gray-400 mb-8 max-w-2xl mx-auto">
+      Organize seu tempo, acompanhe seu progresso e alcance seus objetivos
+      de forma simples e eficiente.
+    </p>
+
+    <div class="space-x-4">
+      <a href="{% url 'register' %}" class="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-lg font-semibold">
+        Começar agora
+      </a>
+      <a href="#" class="border border-gray-600 hover:border-blue-400 px-6 py-3 rounded-lg">
+        Saiba mais
+      </a>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-6">
     
-    <a href="/dashboard/">Dashboard</a>
-    <a href="/auth/login/">login</a>
-    <a href="/auth/register/">Register</a>
+    <div class="bg-gray-800 p-6 rounded-xl text-center shadow">
+      <h3 class="text-gray-400">Horas hoje</h3>
+      <p class="text-3xl font-bold text-blue-400 mt-2">5h</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-xl text-center shadow">
+      <h3 class="text-gray-400">Horas na semana</h3>
+      <p class="text-3xl font-bold text-green-400 mt-2">32h</p>
+    </div>
+
+    <div class="bg-gray-800 p-6 rounded-xl text-center shadow">
+      <h3 class="text-gray-400">Total acumulado</h3>
+      <p class="text-3xl font-bold text-purple-400 mt-2">120h</p>
+    </div>
+
+  </section>
+
+  <!-- Features -->
+  <section class="max-w-6xl mx-auto px-6 py-16">
+    <h2 class="text-3xl font-bold text-center mb-12">Funcionalidades</h2>
+
+    <div class="grid md:grid-cols-3 gap-8">
+
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-3">📊 Dashboard</h3>
+        <p class="text-gray-400">
+          Visualize suas horas de estudo de forma clara e objetiva.
+        </p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-3">📝 Registro</h3>
+        <p class="text-gray-400">
+          Adicione rapidamente suas horas por matéria.
+        </p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-3">🎯 Metas</h3>
+        <p class="text-gray-400">
+          Defina objetivos e acompanhe seu progresso.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="bg-blue-500 py-16 text-center">
+    <h2 class="text-3xl font-bold mb-4">Comece a estudar melhor hoje</h2>
+    <a href="{% url 'register' %}" class="bg-white text-blue-500 px-6 py-3 rounded-lg font-semibold">
+      Criar conta grátis
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-center py-6 text-gray-400">
+    © 2026 Monitor de Horas - Todos os direitos reservados
+  </footer>
 
 </body>
 </html>

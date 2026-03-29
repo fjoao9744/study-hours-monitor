@@ -13,7 +13,7 @@ def login_view(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            return render(request, 'login.html', {'error': 'Credenciais inválidas'})
+            return render(request, 'auth/login.html', {'error': 'Credenciais inválidas'})
         
     return render(request, 'auth/login.html')
 

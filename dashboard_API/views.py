@@ -5,6 +5,7 @@ from .models import Topic, Student, Register
 from .serializers import TopicSerializer, RegisterSerializer
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models import Sum
 
 class DataHours(APIView):
     # future otimization(performance)
@@ -116,7 +117,7 @@ class DataTopic(APIView):
         else:
             user_id = request.user.id
 
-        topics = Topic.objects.filter(student__user_id=user_id).order_by("-hours") \
+        topics = Topic.objects.filter(student__user_id=user_id).order_by("-hours")[:4] \
             if rank else Topic.objects.filter(student__user_id=user_id)
 
         serializer = TopicSerializer(topics, many=True)
@@ -155,4 +156,33 @@ class DataTopic(APIView):
         topic.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+class WeeklyDataHours(APIView):
+    def get(self, request):
+
+        today = timezone.now().date()
+
+        start_week = today - timedelta(days=today.weekday())
+        print(start_week)
+
+        registers = Register.objects.filter(
+            created_at__date__gte=start_week,
+            see=True
+        ).values("created_at__week_day").annotate(total=Sum("hours"))
+        print(registers)
+
+        week_data = {i: 0 for i in range(1, 8)}
+        for r in registers:
+            week_data[r["created_at__week_day"]] = r["total"]
+
+        # organiza Segunda → Domingo
+        labels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
+
+        data = [week_data[i] for i in range(1, 8)]
+
+        print(data)
+
+        return Response({
+            "labels": labels,
+            "data": data
+        })

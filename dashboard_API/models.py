@@ -27,6 +27,7 @@ class Register(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
     hours = models.FloatField(null=False)
     commentary = models.CharField(default="", max_length=255, blank=True)
+    see = models.BooleanField(default=True)
     feedback = models.IntegerField(default=-1)
     created_at = models.DateTimeField(auto_now_add=True)
 

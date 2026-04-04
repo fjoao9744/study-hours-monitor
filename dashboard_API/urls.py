@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DataHours, DataRegister, DataRegisterPersonal,DataTopic
+from .views import DataHours, DataRegister, DataRegisterPersonal, DataTopic, WeeklyDataHours
 
 urlpatterns = [
     path('hours/', DataHours.as_view()),
@@ -10,4 +10,6 @@ urlpatterns = [
 
     path('topic/', DataTopic.as_view()),
     path('topic/<int:pk>/', DataTopic.as_view()),
+
+    path('graphs/weekly/hours/', WeeklyDataHours.as_view())
 ]

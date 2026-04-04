@@ -73,24 +73,15 @@
       <div class="bg-gray-800 p-6 rounded-xl">
         <h3 class="text-xl font-semibold mb-4">📅 Últimos registros</h3>
 
-        <div class="space-y-4">
-
+        <div class="space-y-4 h-48 overflow-hidden" id="lasted_registers__card">
+          <!--
           <div class="flex justify-between border-b border-gray-700 pb-2">
             <span>Matemática</span>
             <span class="text-blue-400">2h</span>
           </div>
-
-          <div class="flex justify-between border-b border-gray-700 pb-2">
-            <span>Programação</span>
-            <span class="text-green-400">3h</span>
-          </div>
-
-          <div class="flex justify-between border-b border-gray-700 pb-2">
-            <span>Física</span>
-            <span class="text-purple-400">1h</span>
-          </div>
-
+          -->
         </div>
+          <a href="{% url 'registers'%}" class="bg-blue-500 text-white px-4 py-1 rounded inline-block">Mostrar tudo</a>
       </div>
 
       <!-- Distribuição -->
@@ -135,7 +126,7 @@
       <!-- Registros -->
       <div class="bg-gray-800 p-6 rounded-xl">
         <h3 class="text-xl font-semibold mb-4">📊 Registros</h3>
-        <a href="{% url 'register_hours'%}">adicionar um novo registro</a>
+        <a href="{% url 'register_create'%}">adicionar um novo registro</a>
         <div class="space-y-4">
           {% for register in registers %}
 
@@ -207,6 +198,40 @@
     }
 
     loadHours();
+
+    card_last_registers = document.getElementById("lasted_registers__card")
+
+    async function loadRegisters(params) {
+      try {
+        const res = await fetch(`${BASE_URL}/api/register/?desc`);
+        const data_register = await res.json();
+        console.log(data_register);
+        data_register.forEach(element => {
+          console.log(element)
+          const div = document.createElement("div");
+          const span1 = document.createElement("span");
+          const span2 = document.createElement("span");
+  
+          div.className = "flex justify-between border-b border-gray-700 pb-2";
+          span2.className = "text-blue-400";
+
+          span1.textContent = element.topic_name;
+          span2.textContent = `${element.hours}h`;
+
+          div.appendChild(span1);
+          div.appendChild(span2);
+
+          card_last_registers.appendChild(div)
+        });
+
+
+              
+      } catch (err) {
+        console.error("Erro ao buscar dados:", err);
+      }
+    }
+
+    loadRegisters();
 
 
   </script>

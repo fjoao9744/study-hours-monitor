@@ -9,6 +9,10 @@ def dashboard(request):
     return render(request, "dashboard/dashboard.html")
 
 @login_required
+def register(request):
+    return render(request, "dashboard/register.html")
+
+@login_required
 def register_hours(request):
 
     return render(request, "dashboard/register_hours.html")

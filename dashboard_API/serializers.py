@@ -8,6 +8,8 @@ class TopicSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    topic_name = serializers.CharField(source='topic.name', read_only=True)
+    
     class Meta:
         model = Register
         fields = '__all__'

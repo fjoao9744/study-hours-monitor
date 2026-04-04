@@ -52,8 +52,31 @@ class DataRegister(APIView):
         get_all = request.GET.get('all')
 
         order = "id" if order else "-id"
-
+            
         registers = Register.objects.order_by(order)[:10] if not get_all else Register.objects.order_by(order)
+        
+        serializer = RegisterSerializer(registers, many=True)
+
+        print(registers, serializer)
+
+        return Response(serializer.data)
+    
+
+class DataRegisterPersonal(APIView):
+    def get(self, request, pk=None):
+        order = request.GET.get('desc')
+        get_all = request.GET.get('all')
+
+        if pk:
+            user_id = pk
+        else:
+            user_id = request.user.id
+
+        order = "-id" if order else "id"
+
+        registers = Register.objects.filter(student__user_id=user_id).order_by(order)[:10] \
+            if not get_all else \
+                    Register.objects.filter(student__user_id=user_id).order_by(order)
         
         serializer = RegisterSerializer(registers, many=True)
 
@@ -83,6 +106,7 @@ class DataRegister(APIView):
         Register.objects.create(student=student, topic=topic, hours=hours)
 
         return Response({})
+
 
 class DataTopic(APIView):
     def get(self, request, pk=None):

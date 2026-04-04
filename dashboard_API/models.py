@@ -16,6 +16,9 @@ class Topic(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ['student', 'name']
+
     def __str__(self):
         return self.name
     

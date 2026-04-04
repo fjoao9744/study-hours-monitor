@@ -61,7 +61,6 @@ class DataRegister(APIView):
 
         return Response(serializer.data)
     
-
 class DataRegisterPersonal(APIView):
     def get(self, request, pk=None):
         order = request.GET.get('desc')
@@ -110,13 +109,15 @@ class DataRegisterPersonal(APIView):
 
 class DataTopic(APIView):
     def get(self, request, pk=None):
+        rank = request.GET.get('rank')
+
         if pk:
             user_id = pk
         else:
             user_id = request.user.id
 
-        student = Student.objects.get(user_id=user_id)
-        topics = Topic.objects.filter(student=student)
+        topics = Topic.objects.filter(student__user_id=user_id).order_by("-hours") \
+            if rank else Topic.objects.filter(student__user_id=user_id)
 
         serializer = TopicSerializer(topics, many=True)
 

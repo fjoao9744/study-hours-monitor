@@ -52,7 +52,7 @@ class DataRegister(APIView):
         order = request.GET.get('desc')
         get_all = request.GET.get('all')
 
-        order = "id" if order else "-id"
+        order = "-id" if order else "id"
             
         registers = Register.objects.order_by(order)[:10] if not get_all else Register.objects.order_by(order)
         
@@ -62,7 +62,31 @@ class DataRegister(APIView):
 
         return Response(serializer.data)
     
-class DataRegisterPersonal(APIView):
+    def post(self, request):
+        topic_id = request.data.get("topic")
+        hours = request.data.get("hours")
+        commentary = request.data.get("commentary")
+        feedback = request.data.get("feedback")
+
+        if hours is None:
+            return Response({"error": "hours is required"}, status=400)
+
+        hours = round(float(hours), 1)
+
+        student = Student.objects.get(user_id=request.user.id)
+        topic = Topic.objects.get(id=topic_id, student=student)
+
+        student.total_hours += hours
+        topic.hours += hours
+
+        student.save()
+        topic.save()
+
+        Register.objects.create(student=student, topic=topic, hours=hours, commentary=commentary, feedback=feedback)
+
+        return Response({})
+    
+class DataRegisterDetail(APIView):
     def get(self, request, pk=None):
         order = request.GET.get('desc')
         get_all = request.GET.get('all')
@@ -84,28 +108,55 @@ class DataRegisterPersonal(APIView):
 
         return Response(serializer.data)
     
-    def post(self, request, pk):
-        topic_name = request.data.get("topic")
+    def put(self, request, pk): # try exception future aditions
+        topic_id = request.data.get("topic")
         hours = request.data.get("hours")
+        commentary = request.data.get("commentary")
+        feedback = request.data.get("feedback")
 
-        # possible error(not user.id)
-        if pk:
-            user_id = pk
-        else:
-            user_id = request.user.id
+        register = Register.objects.get(id=pk, student__user=request.user)
 
-        student = Student.objects.get(user_id=user_id)
-        topic = Topic.objects.get(name=topic_name)
+        if topic_id != register.topic.id:
+            topic = Topic.objects.get(id=topic_id)
+            register.topic = topic
 
-        student.total_hours += int(hours)
-        student.save()
+        if hours is not None:
+            old_hours = register.hours
+            new_hours = round(float(hours), 1)
 
-        topic.hours += int(hours)
-        topic.save()
+            diff = round(new_hours - old_hours, 1)
 
-        Register.objects.create(student=student, topic=topic, hours=hours)
+            register.hours = new_hours
+            register.student.total_hours += diff
+            register.topic.hours += diff
 
-        return Response({})
+            register.student.save()
+            register.topic.save()
+
+        if commentary:
+            register.commentary = commentary
+
+        if feedback:
+            register.feedback = feedback
+
+        register.save()
+
+        return Response({}) # returns future something
+    
+    def delete(self, request, pk):
+
+        register = Register.objects.get(id=pk, student__user=request.user)
+
+        register.student.total_hours -= round(float(register.hours), 1)
+        register.student.save()
+
+        register.topic.hours -= round(float(register.hours), 1)
+        register.topic.save()
+
+        register.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 
 
 class DataTopic(APIView):
@@ -125,7 +176,7 @@ class DataTopic(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk=None):
-        topic_name = request.data.get("name")
+        topic_name = request.data.get("name").capitalize()
         topic_color = request.data.get("color")
 
         if pk:

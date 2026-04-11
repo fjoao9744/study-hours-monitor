@@ -56,7 +56,6 @@
         <!-- ADICIONAR -->
         <button 
           type="submit"
-          formaction="{% url 'add_topic' %}"
           class="bg-green-500 px-4 py-2 rounded-lg"
         >
           Adicionar
@@ -65,7 +64,6 @@
         <!-- REMOVER -->
         <button 
           type="submit"
-          formaction="{% url 'remove_topic' %}"
           class="bg-red-500 px-4 py-2 rounded-lg"
         >
           Remover
@@ -128,9 +126,15 @@
           >
         </div>
 
+        <!-- comentary -->
+        <div>
+          <label class="block mb-2 text-gray-400">Comentario (opcional)</label>
+          <input type="text" name="comentary">
+        </div>
+
         <!-- Botões -->
         <div class="flex justify-between items-center pt-4">
-          <a href="{% url 'dashboard' %}" class="text-gray-400 hover:text-white">
+          <a href="{% url 'registers' %}" class="text-gray-400 hover:text-white">
             ← Voltar
           </a>
 

@@ -139,8 +139,30 @@ class DataTopic(APIView):
 
         return Response({})
     
-    def delete(self, request, pk):
-        topic_name = request.data.get("name") # possible error(not name)
+    def put(self, request, pk=None): # try exception future aditions
+        topic_id = request.data.get("id")
+        name = request.data.get("name")
+        color = request.data.get("color")
+
+        if pk:
+            user_id = pk
+        else:
+            user_id = request.user.id
+
+        topic = Topic.objects.get(id=topic_id, student__user_id=user_id)
+
+        if name:
+            topic.name = name
+        
+        if color:
+            topic.color = color
+
+        topic.save()
+
+        return Response({}) # returns future something
+    
+    def delete(self, request, pk=None):
+        topic_id = request.data.get("id") # possible error(not name)
 
         if pk:
             user_id = pk
@@ -148,7 +170,7 @@ class DataTopic(APIView):
             user_id = request.user.id
         
         student = Student.objects.get(user_id=user_id)
-        topic = Topic.objects.get(name=topic_name)
+        topic = Topic.objects.get(id=topic_id)
 
         student.total_hours -= int(topic.hours)
         student.save()

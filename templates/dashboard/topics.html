@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tópicos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-900 text-white">
+
+  <!-- Navbar -->
+  <header class="bg-gray-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-blue-400">
+        <a href="{% url 'homepage' %}">⏱ Horas Contadas</a>
+      </h1>
+
+      <div class="flex gap-4">
+        <a href="{% url 'homepage' %}" class="hover:text-blue-400">Dashboard</a>
+        <a href="{% url 'logout' %}" class="hover:text-red-400">Sair</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo -->
+  <main class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- Título -->
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h2 class="text-3xl font-bold">📊 Seus Tópicos</h2>
+        <p class="text-gray-400">Gerencie seus tópicos de estudo</p>
+      </div>
+
+      <button onclick="openModal()" class="bg-green-500 px-4 py-2 rounded">
+        + Novo tópico
+      </button>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid md:grid-cols-3 gap-6">
+
+      {% for topic in topics %}
+      <div class="bg-gray-800 p-5 rounded-xl shadow">
+
+        <!-- Nome + cor -->
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold">{{ topic.name }}</h3>
+
+          <div 
+            class="w-4 h-4 rounded-full"
+            style="background-color: {{ topic.color }};"
+          ></div>
+        </div>
+
+        <!-- Horas -->
+        <p class="text-gray-400 mb-4">
+          Total estudado:
+          <span class="text-blue-400 font-bold">
+            {{ topic.hours }}h
+          </span>
+        </p>
+
+        <!-- Ações -->
+        <div class="flex justify-between text-sm">
+          <button class="text-yellow-400 hover:underline"
+          onclick="openEditModal({{ topic.id }}, '{{ topic.name }}', '{{ topic.color }}')">
+            Editar
+          </button>
+          <button class="text-red-400 hover:underline"
+          onclick="openDeleteModal({{ topic.id }})">
+            Deletar
+          </button>
+        </div>
+
+      </div>
+      {% empty %}
+      <p class="text-gray-400">Nenhum tópico criado ainda.</p>
+      {% endfor %}
+
+    </div>
+
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-gray-800 p-6 rounded-xl w-96 shadow-lg">
+      <h2 class="text-xl font-bold mb-4">Novo Tópico</h2>
+
+      <form id="topicForm" class="space-y-4">
+        <input type="hidden" id="topic_id">
+
+        <input type="text" id="topic_name" placeholder="Nome" class="w-full p-2 rounded bg-gray-700">
+        <input type="color" id="topic_color" class="w-full h-10">
+
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="closeModal()" class="bg-gray-600 px-4 py-1 rounded">
+            Cancelar
+          </button>
+          <button type="submit" class="bg-blue-500 px-4 py-1 rounded">
+            Salvar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- delete Modal -->
+  <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+
+  <div class="bg-gray-800 p-6 rounded-xl w-80 shadow-lg text-center">
+    
+    <h2 class="text-lg font-bold mb-4">⚠️ Confirmar exclusão</h2>
+    
+    <p class="text-gray-400 mb-6">
+      Tem certeza que deseja apagar este tópico? todos os registros referentes a ele tambem serão apagados.
+    </p>
+
+    <div class="flex justify-center gap-4">
+      <button onclick="closeDeleteModal()" class="bg-gray-600 px-4 py-1 rounded">
+        Cancelar
+      </button>
+      <button onclick="deleteTopic()" class="bg-red-500 px-4 py-1 rounded">
+        Apagar
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+  <!-- JS -->
+  <script>
+    function getCSRFToken() {
+      return document.cookie
+        .split("; ")
+        .find(row => row.startsWith("csrftoken="))
+        ?.split("=")[1];
+    }
+    
+    const BASE_URL = window.location.origin;
+    const modal = document.getElementById("modal");
+
+    function openModal() {
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      document.getElementById("topic_id").value = "";
+      document.getElementById("topic_name").value = "";
+      document.getElementById("topic_color").value = "#3b82f6";
+    }
+
+    function closeModal() {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    document.getElementById("topicForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("topic_name").value;
+      const id = document.getElementById("topic_id").value;
+      const color = document.getElementById("topic_color").value;
+
+      const isEdit = id !== "";
+
+      const method = isEdit ? "PUT" : "POST";
+
+      try {
+        const res = await fetch(`${BASE_URL}/api/topic/`, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken()
+          },
+          credentials: "include",
+          body: JSON.stringify({ id, name, color })
+        });
+
+        if (res.ok) {
+          location.reload();
+        }
+
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    function openEditModal(id, name, color) {
+    openModal();
+
+    document.getElementById("topic_id").value = id;
+    document.getElementById("topic_name").value = name;
+    document.getElementById("topic_color").value = color;
+    }
+
+  const deleteModal = document.getElementById("deleteModal");
+  let topicToDelete = null;
+
+  function openDeleteModal(id) {
+    topicToDelete = id;
+    deleteModal.classList.remove("hidden");
+    deleteModal.classList.add("flex");
+  }
+
+  function closeDeleteModal() {
+    deleteModal.classList.add("hidden");
+    deleteModal.classList.remove("flex");
+    topicToDelete = null;
+  }
+
+  async function deleteTopic() {
+    if (!topicToDelete) return;
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/topic/`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCSRFToken()
+          },
+          credentials: "include",
+          body: JSON.stringify({"id": topicToDelete})
+      });
+
+      if (res.ok) {
+        closeDeleteModal();
+        location.reload(); // depois a gente remove isso
+      } else {
+        console.error("Erro ao deletar");
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  </script>
+
+</body>
+</html>

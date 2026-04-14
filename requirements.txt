@@ -1,4 +1,6 @@
 django
-mysqlclient
-dotenv
 djangorestframework
+psycopg2-binary
+dj-database-url
+dotenv
+gunicorn

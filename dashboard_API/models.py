@@ -5,6 +5,9 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student')
     total_hours = models.IntegerField()
 
+    class Meta:
+        db_table = "students"
+
     def __str__(self):
         return self.user.username
 
@@ -17,6 +20,7 @@ class Topic(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        db_table = "topics"
         unique_together = ['student', 'name']
 
     def __str__(self):
@@ -31,6 +35,9 @@ class Register(models.Model):
     feedback = models.IntegerField(default=-1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "registers"
 
     def __str__(self):
         return f"{self.student} - {self.hours}h"

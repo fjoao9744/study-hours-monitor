@@ -14,7 +14,7 @@ class Student(models.Model):
 class Topic(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='topics')
     name = models.CharField(max_length=100, null=False)
-    hours = models.FloatField(default=0, null=False)
+    hours = models.DecimalField(default=0, max_digits=4, decimal_places=2, null=False)
     color = models.CharField(default="#4E4E4E", max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

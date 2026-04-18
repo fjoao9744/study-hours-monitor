@@ -20,7 +20,7 @@ class DataHours(APIView):
         today = timezone.now().date()
         print(today)
         register_today = Register.objects.filter(student__user_id=user_id, created_at__date=today)
-        today_hours = sum(r.hours for r in register_today)
+        today_hours = round(sum(r.hours for r in register_today), 2)
 
         # weekly
         weekly = today.weekday()
@@ -39,7 +39,7 @@ class DataHours(APIView):
             created_at__date__lte=today
         )
 
-        weekly_hours = sum(r.hours for r in register_weekly)
+        weekly_hours = round(sum(r.hours for r in register_weekly), 2)
 
         # total
         total_hours = Student.objects.get(user_id=user_id).total_hours
@@ -156,7 +156,6 @@ class DataRegisterDetail(APIView):
         register.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
 
 
 class DataTopic(APIView):
@@ -254,6 +253,40 @@ class WeeklyDataHours(APIView):
         data = [week_data[i] for i in range(1, 8)]
 
         print(data)
+
+        return Response({
+            "labels": labels,
+            "data": data
+        })
+
+class WeeklyDataHoursUser(APIView):
+    def get(self, request, pk=None):
+
+        if pk:
+            user_id = pk
+        else:
+            user_id = request.user.id
+        
+        print(request.user, request.user.id)
+
+        today = timezone.now().date()
+
+        start_week = today - timedelta(days=today.weekday())
+
+        registers = Register.objects.filter(
+            student__user_id=user_id,
+            created_at__date__gte=start_week,
+            see=True
+        ).values("created_at__week_day").annotate(total=Sum("hours"))
+
+        week_data = {i: 0 for i in range(1, 8)}
+        for r in registers:
+            week_data[r["created_at__week_day"]] = r["total"]
+
+        # organiza Segunda → Domingo
+        labels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
+
+        data = [week_data[i] for i in range(1, 8)]
 
         return Response({
             "labels": labels,

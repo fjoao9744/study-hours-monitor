@@ -193,11 +193,12 @@
         const res = await fetch(`${BASE_URL}/api/topic/?rank=true`);
         const data_topics = await res.json();
         console.log(data_topics);
-        total_hours = data_topics.reduce((acc, topic) => acc + topic.hours, 0);
+        total_hours = data_topics.reduce((acc, topic) => acc + Number(topic.hours), 0).toFixed(2);
 
         data_topics.forEach(topic => {
           const div = document.createElement("div");
           const div_percent = document.createElement("div");
+          console.log(topic.hours, total_hours)
           const percent = (topic.hours / total_hours) * 100;
 
           div.innerHTML = `

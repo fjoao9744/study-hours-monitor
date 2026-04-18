@@ -315,7 +315,7 @@
             feedback: document.getElementById("edit_register_feedback").value
         };
 
-        const res = await fetch(`${BASE_URL}/api/register/${id}/`, {
+        const res = await fetch(`${BASE_URL}/api/register/user/${id}/`, {
             method: "PUT",
             headers: {
             "Content-Type": "application/json",
@@ -351,7 +351,7 @@
         if (!registerToDelete) return;
         console.log(registerToDelete)
 
-        const res = await fetch(`${BASE_URL}/api/register/${registerToDelete}/`, {
+        const res = await fetch(`${BASE_URL}/api/register/user/${registerToDelete}/`, {
             method: "DELETE",
             headers: {
                 "X-CSRFToken": getCSRFToken()

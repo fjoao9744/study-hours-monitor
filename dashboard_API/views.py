@@ -6,6 +6,7 @@ from .serializers import TopicSerializer, RegisterSerializer
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
+from decimal import Decimal
 
 class DataHours(APIView):
     # future otimization(performance)
@@ -63,28 +64,33 @@ class DataRegister(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        topic_id = request.data.get("topic")
-        hours = request.data.get("hours")
-        commentary = request.data.get("commentary")
-        feedback = request.data.get("feedback")
+        try:
+            topic_id = request.data.get("topic")
+            hours = request.data.get("hours")
+            commentary = request.data.get("commentary")
+            feedback = request.data.get("feedback")
 
-        if hours is None:
-            return Response({"error": "hours is required"}, status=400)
+            if hours is None:
+                return Response({"error": "hours is required"}, status=400)
 
-        hours = round(float(hours), 1)
+            hours = Decimal(round(float(hours), 1))
 
-        student = Student.objects.get(user_id=request.user.id)
-        topic = Topic.objects.get(id=topic_id, student=student)
+            student = Student.objects.get(user_id=request.user.id)
+            topic = Topic.objects.get(id=topic_id, student=student)
 
-        student.total_hours += hours
-        topic.hours += hours
+            student.total_hours += hours
+            topic.hours += hours
 
-        student.save()
-        topic.save()
+            student.save()
+            topic.save()
 
-        Register.objects.create(student=student, topic=topic, hours=hours, commentary=commentary, feedback=feedback)
+            Register.objects.create(student=student, topic=topic, hours=hours, commentary=commentary, feedback=feedback)
 
-        return Response({})
+            return Response({})
+    
+        except Exception as e:
+            print(e)
+            return Response({"error": str(e)}, status=500)
     
 class DataRegisterDetail(APIView):
     def get(self, request, pk=None):
@@ -107,6 +113,8 @@ class DataRegisterDetail(APIView):
         print(registers, serializer)
 
         return Response(serializer.data)
+        
+    
     
     def put(self, request, pk): # try exception future aditions
         topic_id = request.data.get("topic")
@@ -124,7 +132,7 @@ class DataRegisterDetail(APIView):
             old_hours = register.hours
             new_hours = round(float(hours), 1)
 
-            diff = round(new_hours - old_hours, 1)
+            diff = Decimal(round(new_hours - old_hours, 1))
 
             register.hours = new_hours
             register.student.total_hours += diff

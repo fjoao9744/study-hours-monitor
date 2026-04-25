@@ -17,3 +17,7 @@ def topics(request):
     topics = Topic.objects.filter(student__user_id=request.user.id)
     return render(request, "dashboard/topics.html", {"topics": topics})
 
+@login_required
+def teste(request):
+    return render(request, "dashboard/teste.html")
+

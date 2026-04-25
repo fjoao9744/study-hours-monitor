@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student')
-    total_hours = models.IntegerField()
+    total_hours = models.DecimalField(default=0, max_digits=4, decimal_places=2, null=False)
 
     class Meta:
         db_table = "students"
@@ -29,7 +29,7 @@ class Topic(models.Model):
 class Register(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='registers')
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
-    hours = models.FloatField(null=False)
+    hours = models.DecimalField(default=0, max_digits=4, decimal_places=2, null=False)
     commentary = models.CharField(default="", max_length=255, blank=True)
     see = models.BooleanField(default=True)
     feedback = models.IntegerField(default=-1)

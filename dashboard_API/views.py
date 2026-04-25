@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
 from decimal import Decimal
+from django.db import transaction
 
 class DataHours(APIView):
     # future otimization(performance)
@@ -152,18 +153,25 @@ class DataRegisterDetail(APIView):
         return Response({}) # returns future something
     
     def delete(self, request, pk):
+        with transaction.atomic():
+            try:
+                register = Register.objects.get(id=pk, student__user=request.user)
+                print(type(register.hours))
 
-        register = Register.objects.get(id=pk, student__user=request.user)
+                hours = register.hours
 
-        register.student.total_hours -= round(float(register.hours), 1)
-        register.student.save()
+                register.student.total_hours -= hours
+                register.student.save()
 
-        register.topic.hours -= round(float(register.hours), 1)
-        register.topic.save()
+                register.topic.hours -= hours
+                register.topic.save()
 
-        register.delete()
+                register.delete()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except Exception as e:
+                print(e)
+                return Response({"error": str(e)}, status=500)
 
 
 class DataTopic(APIView):

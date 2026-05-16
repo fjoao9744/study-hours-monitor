@@ -117,3 +117,6 @@ import os
 if os.getenv("FLY_APP_NAME"):
     CSRF_TRUSTED_ORIGINS = [f"https://{os.getenv('FLY_APP_NAME')}.fly.dev"]
 
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" # future SMTP
+

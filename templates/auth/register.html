@@ -52,7 +52,9 @@
           name="password"
           placeholder="••••••••"
           class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-blue-500"
+          id="password"
         >
+
       </div>
 
       <!-- Confirmar senha -->
@@ -63,8 +65,13 @@
           name="confirm_password"
           placeholder="••••••••"
           class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:outline-none focus:border-blue-500"
+          id="confirm_password"
         >
       </div>
+      <label>
+        <input type="checkbox" id="show_password">
+        Exibir senha
+      </label>
 
       <!-- Botão -->
       <button 
@@ -83,6 +90,21 @@
     </form>
 
   </div>
+
+  <script>
+    let password = document.getElementById("password")
+    let confirm_password = document.getElementById("confirm_password")
+      let checkbox = document.getElementById("show_password")
+    document.getElementById("show_password").addEventListener("change", function() {
+    if (checkbox.checked) {
+        password.type = "text";
+        confirm_password.type = "text";
+    } else {
+        password.type = "password";
+        confirm_password.type = "password";
+    }
+  })
+  </script>
 
 </body>
 </html>

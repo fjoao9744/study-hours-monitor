@@ -124,14 +124,19 @@ class DataRegisterDetail(APIView):
         feedback = request.data.get("feedback")
 
         register = Register.objects.get(id=pk, student__user=request.user)
+        print(register.id)
 
-        if topic_id != register.topic.id:
+        if int(topic_id) != register.topic.id:
             topic = Topic.objects.get(id=topic_id)
             register.topic = topic
 
         if hours is not None:
-            old_hours = register.hours
+            old_hours = float(register.hours)
             new_hours = round(float(hours), 1)
+
+            print(old_hours, new_hours)
+            print(type(old_hours), type(new_hours))
+
 
             diff = Decimal(round(new_hours - old_hours, 1))
 
